@@ -32,10 +32,13 @@ class Catalogo:
 
     def playlist_de(self, usuario_id: str):
         lista = []
+        num = 0
         for usuarios in database["usuarios"]:
             if usuarios["id"] == usuario_id:
                 playlist = usuarios["playlist"]
+                nome = usuarios["nome"]
         for i in playlist:
+            num += 1
             for conteudos in database["conteudos"]:
                 if conteudos["id"] == i:
                     if conteudos["tipo"] == "album":
@@ -43,11 +46,43 @@ class Catalogo:
                     else:
                         tipo = "música"
                     lista.append(conteudos["titulo"] + " - " + conteudos["artista"] + " (" + tipo + ") ")
+        print(f"Playlist de {nome} ({num} itens):")
         for index, info in enumerate(lista):
             print(f"{index + 1}. {info}")
 
-    def conteudo_na_posicao(self, usuario_id: str, posicao: int) -> str | None: ...
-    def intersecao_playlists(self, usuario_ids: list[str]) -> list[str]: ...
+    def numero_de_itens(self, usuario_id: str):
+        num = 0
+        for usuarios in database["usuarios"]:
+            if usuarios["id"] == usuario_id:
+                playlist = usuarios["playlist"]
+        for i in playlist:
+            num += 1
+        return num
+
+    def conteudo_na_posicao(self, usuario_id: str, posicao: int):
+        lista = []
+        num = 0
+        for usuarios in database["usuarios"]:
+            if usuarios["id"] == usuario_id:
+                playlist = usuarios["playlist"]
+                nome = usuarios["nome"]
+        for i in playlist:
+            num += 1
+            for conteudos in database["conteudos"]:
+                if conteudos["id"] == i:
+                    if conteudos["tipo"] == "album":
+                        tipo = "álbum"
+                    else:
+                        tipo = "música"
+                    lista.append(conteudos["titulo"] + " - " + conteudos["artista"] + " (" + tipo + ") ")
+        try:
+            return lista[posicao - 1]
+        except:
+            return "undefined"
+        
+
+    def intersecao_playlists(self, usuario_ids: list[str]):
+        list.split()
 
     # --- dados de um conteúdo ---
     def rating_de(self, conteudo_id: str) -> float | None: ...

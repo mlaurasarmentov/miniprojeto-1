@@ -31,15 +31,20 @@ class Catalogo:
                 return usuario["id"]
 
     def playlist_de(self, usuario_id: str):
-        i = 0
-        playlist = []
-        for usuario_id in database["usuarios"]:
-            playlist = usuario["playlist"]
-            while(i < len(usuario["playlist"])):
-                if playlist[i] in database["conteudos"]:
-                    print(f"{conteudos[titulo]} - {conteudos[artista]} ({conteudos["tipo"]})")
-
-            
+        lista = []
+        for usuarios in database["usuarios"]:
+            if usuarios["id"] == usuario_id:
+                playlist = usuarios["playlist"]
+        for i in playlist:
+            for conteudos in database["conteudos"]:
+                if conteudos["id"] == i:
+                    if conteudos["tipo"] == "album":
+                        tipo = "álbum"
+                    else:
+                        tipo = "música"
+                    lista.append(conteudos["titulo"] + " - " + conteudos["artista"] + " (" + tipo + ") ")
+        for index, info in enumerate(lista):
+            print(f"{index + 1}. {info}")
 
     def conteudo_na_posicao(self, usuario_id: str, posicao: int) -> str | None: ...
     def intersecao_playlists(self, usuario_ids: list[str]) -> list[str]: ...

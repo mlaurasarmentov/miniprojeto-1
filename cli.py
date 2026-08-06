@@ -34,4 +34,5 @@ while(True):
     elif comando == 2:
         nome = input("Nome do usuário: ")
         id = catalogo.Catalogo.buscar_usuario_por_nome("usuario", nome)
-        
+        catalogo.Catalogo.playlist_de("usuario", id)
+

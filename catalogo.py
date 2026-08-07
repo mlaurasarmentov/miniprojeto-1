@@ -15,14 +15,14 @@ class Catalogo:
     # --- usuários e playlists ---
     def listar_usuarios(self):
         num = 0
-        lista = []
+        lista_usuarios = []
         for usuario in database["usuarios"]:
             num += 1
-            if usuario not in lista:
-                lista.append(usuario["nome"])
-        lista.sort()
+            if usuario not in lista_usuarios:
+                lista_usuarios.append(usuario["nome"])
+        lista_usuarios.sort()
         print(f"{num} usuários (em ordem alfabética):")
-        for um, dois, tres in zip(lista[::3], lista[1::3], lista[2::3]):
+        for um, dois, tres in zip(lista_usuarios[::3], lista_usuarios[1::3], lista_usuarios[2::3]): # formatiza em colunas
             print ('{:<18}{:<18}{:<}'.format(um, dois, tres))
 
     def buscar_usuario_por_nome(self, nome: str):
@@ -30,68 +30,140 @@ class Catalogo:
             if usuario["nome"] == nome:
                 return usuario["id"]
 
+    def buscar_cont_por_id(self, id: str):
+        for conteudos in database["conteudos"]:
+            if conteudos["id"] == id:
+                if conteudos["tipo"] == "album":
+                    tipo = "álbum"
+                else:
+                    tipo = "música"
+                return (conteudos["titulo"] + " - " + conteudos["artista"] + " (" + tipo + ") ")
+
     def playlist_de(self, usuario_id: str):
-        lista = []
-        num = 0
+        playlist_usuario = []
+        musicas = 0
         for usuarios in database["usuarios"]:
             if usuarios["id"] == usuario_id:
                 playlist = usuarios["playlist"]
                 nome = usuarios["nome"]
-        for i in playlist:
-            num += 1
+        for musica in playlist:
+            musicas += 1
             for conteudos in database["conteudos"]:
                 if conteudos["id"] == i:
                     if conteudos["tipo"] == "album":
                         tipo = "álbum"
                     else:
                         tipo = "música"
-                    lista.append(conteudos["titulo"] + " - " + conteudos["artista"] + " (" + tipo + ") ")
+                    playlist_usuario.append(conteudos["titulo"] + " - " + conteudos["artista"] + " (" + tipo + ") ")
         print(f"Playlist de {nome} ({num} itens):")
-        for index, info in enumerate(lista):
+        for index, info in enumerate(playlist_usuario):
             print(f"{index + 1}. {info}")
 
     def numero_de_itens(self, usuario_id: str):
-        num = 0
+        itens = 0
         for usuarios in database["usuarios"]:
             if usuarios["id"] == usuario_id:
                 playlist = usuarios["playlist"]
-        for i in playlist:
-            num += 1
-        return num
+        for musica in playlist:
+            itens += 1
+        return itens
 
     def conteudo_na_posicao(self, usuario_id: str, posicao: int):
-        lista = []
-        num = 0
+        playlist_usuario = []
         for usuarios in database["usuarios"]:
             if usuarios["id"] == usuario_id:
                 playlist = usuarios["playlist"]
                 nome = usuarios["nome"]
         for i in playlist:
-            num += 1
             for conteudos in database["conteudos"]:
                 if conteudos["id"] == i:
                     if conteudos["tipo"] == "album":
                         tipo = "álbum"
                     else:
                         tipo = "música"
-                    lista.append(conteudos["titulo"] + " - " + conteudos["artista"] + " (" + tipo + ") ")
+                    playlist_usuario.append(conteudos["titulo"] + " - " + conteudos["artista"] + " (" + tipo + ") ")
         try:
-            return lista[posicao - 1]
+            return playlist_usuario[posicao - 1]
         except:
             return "undefined"
         
 
     def intersecao_playlists(self, usuario_ids: list[str]):
-        list.split()
+        playlist_u1 = []
+        playlist_u2 = []
+        musicas = 0
+        for usuarios in database["usuarios"]:
+            if usuarios["id"] == usuario_ids[0]:
+                    playlist1 = usuarios["playlist"]
+                    if usuario_ids[0] == usuario_ids[1]:
+                        playlist2 = usuarios["playlist"]
+            elif usuarios["id"] == usuario_ids[1] and usuario_ids[0] != usuario_ids[1]:
+                playlist2 = usuarios["playlist"]
+        for i in playlist2:
+            for j in playlist1:
+                for conteudos in database["conteudos"]:
+                    if conteudos["id"] == j:
+                        playlist_u2.append(conteudos["id"])
+            for conteudos in database["conteudos"]:
+                if conteudos["id"] == i and conteudos["id"] in playlist_u2:
+                    if conteudos["tipo"] == "album":
+                        tipo = "álbum"
+                    else:
+                        tipo = "música"
+                    playlist_u1.append(conteudos["titulo"] + " - " + conteudos["artista"] + " (" + tipo + ") " + " (" + conteudos["id"] + ") ")
+                    musicas += 1
+        print(f"Interseção ({musicas} conteúdos):")
+        for info in playlist_u1:
+            print(f"  - {info}")
+
 
     # --- dados de um conteúdo ---
-    def rating_de(self, conteudo_id: str) -> float | None: ...
-    def duracao_total_de(self, conteudo_id: str) -> int | None: ...
-    def generos_de(self, conteudo_id: str) -> list[str] | None: ...
+    def rating_de(self, conteudo_id: str):
+        for conteudos in database["conteudos"]:
+            if conteudos["id"] == conteudo_id:
+                try:
+                    rating = float(conteudos["rating"])
+                except: 
+                    rating = null
+        return rating
+
+    def duracao_total_de(self, conteudo_id: str):
+        duracao = 0
+        for conteudos in database["conteudos"]:
+            if conteudos["id"] == conteudo_id:
+                if conteudos["tipo"] == "musica":
+                    duracao = conteudos["duracao_seg"] 
+                else:
+                    for faixas in conteudos["faixas"]:
+                        if faixas["duracao_seg"] != null:
+                            duracao += faixas["duracao_seg"]
+        return duracao
+
+    def generos_de(self, conteudo_id: str):
+        for conteudos in database["conteudos"]:
+            if conteudos["id"] == conteudo_id:
+                return conteudos["generos"]
+
     def plataformas_de(self, conteudo_id: str) -> list[str] | None: ...
     def data_adicionado_de(self, conteudo_id: str) -> str | None: ...
     def execucoes_de(self, conteudo_id: str) -> int | None: ...
-    def conteudos_do_genero(self, genero: str) -> list[str]: ...
+    def conteudos_do_genero(self, genero: str):
+        musica_no_gen = []
+        musicas = 0
+        for conteudo in database["conteudos"]:
+            generos_conteudo = conteudo["genero"]
+            gen_normal = generos_conteudo.strip()
+            if isinstance(generos_conteudo, str):
+                generos_conteudo = [generos_conteudo]
+            if genero in generos_conteudo:
+                musica_no_gen.append(conteudo["titulo"] + " - " + conteudo["artista"] + " (" + ") (" + str(conteudo["id"]) + ")")
+                musicas += 1
+        if musicas == 0:
+            print("Nenhum conteúdo nesse gênero.")
+            return 1
+        print(f"{musicas} conteúdos em {genero}:")
+        for info in musica_no_gen:
+            print(f"  - {info}")
 
     # --- fila de reprodução ---
     def enfileirar(self, conteudo_id: str) -> bool: ...

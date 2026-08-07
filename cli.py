@@ -25,31 +25,54 @@ while(True):
         if comando == 0:
             break
 
+        match comando: 
+            case 1:
+                catalogo.Catalogo.listar_usuarios("usuario")
+
+            case 2:
+                nome = input("Nome do usuário: ")
+                id = catalogo.Catalogo.buscar_usuario_por_nome("usuario", nome)
+                catalogo.Catalogo.playlist_de("usuario", id)
+
+            case 3:
+                nome = input("Nome do usuário: ")
+                id = catalogo.Catalogo.buscar_usuario_por_nome("usuario", nome)
+                num = catalogo.Catalogo.numero_de_itens("usuario", id)
+                print(f"Playlist de {nome} tem {num} itens (posições 1 a {num}).")
+                posicao = int(input("Posição: "))
+                conteudo = catalogo.Catalogo.conteudo_na_posicao("usuario", id, posicao)
+                print(f"Posição {posicao} de {nome}: {conteudo}")
+
+            case 4:
+                id1 = []
+                id2 = []
+                nomes = input("Nome dos usuários separados por vírgula (ex.: Nicholas, Uchoa): ")
+                if "," not in nomes:
+                    print("Informe pelo menos 2 usuários.")
+                dados = nomes.split(", ")
+                id1.append(catalogo.Catalogo.buscar_usuario_por_nome("usuario", dados[0]))
+                id2.append(catalogo.Catalogo.buscar_usuario_por_nome("usuario", dados[1]))
+                id1.extend(id2)
+                catalogo.Catalogo.intersecao_playlists("usuario", id1)
+            
+            case 5:
+                id = input("ID do conteúdo (ex.: t000000): ")
+                nome = catalogo.Catalogo.buscar_cont_por_id("conteudo", id)
+                print(nome)
+                rating = catalogo.Catalogo.rating_de("conteudo", id)
+                duracao = catalogo.Catalogo.duracao_total_de("conteudo", id)
+                print(f"  rating: {rating}")
+                duracao_min = int(int(duracao) / 60)
+                duracao_seg = int(duracao) % 60
+                print(f"  duração: {duracao_min}m{duracao_seg}s")
+                generos = catalogo.Catalogo.generos_de("conteudo", id)
+                print(f"  gêneros: {genero}")
+
+            case 6:
+                generos = input("Gênero (ex.: Pop): ")
+                conteudos = catalogo.Catalogo.conteudos_do_genero("conteudo", generos)
+        
     except:
         print(f" Opção inválida.")
 
-    if comando == 1:
-        catalogo.Catalogo.listar_usuarios("usuario")
-
-    elif comando == 2:
-        nome = input("Nome do usuário: ")
-        id = catalogo.Catalogo.buscar_usuario_por_nome("usuario", nome)
-        catalogo.Catalogo.playlist_de("usuario", id)
-
-    elif comando == 3:
-        nome = input("Nome do usuário: ")
-        id = catalogo.Catalogo.buscar_usuario_por_nome("usuario", nome)
-        num = catalogo.Catalogo.numero_de_itens("usuario", id)
-        print(f"Playlist de {nome} tem {num} itens (posições 1 a {num}).")
-        posicao = int(input("Posição: "))
-        conteudo = catalogo.Catalogo.conteudo_na_posicao("usuario", id, posicao)
-        print(f"Posição {posicao} de {nome}: {conteudo}")
-
-    elif comando == 4:
-        nomes = input("Nome dos usuários separados por vírgula (ex.: Nicholas, Uchoa): ")
-        if "," not in nomes:
-            print("Informe pelo menos 2 usuários.")
-        nome.split(",")
-        id1 = catalogo.Catalogo.buscar_usuario_por_nome("usuario", nome[1])
-        id2 = catalogo.Catalogo.buscar_usuario_por_nome("usuario", nome[2])
 

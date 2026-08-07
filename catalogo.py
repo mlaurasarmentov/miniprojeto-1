@@ -124,7 +124,9 @@ class Catalogo:
                 try:
                     rating = float(conteudos["rating"])
                 except: 
-                    rating = null
+                    rating = None
+            else:
+                rating = None
         return rating
 
     def duracao_total_de(self, conteudo_id: str):
@@ -135,37 +137,64 @@ class Catalogo:
                     duracao = conteudos["duracao_seg"] 
                 else:
                     for faixas in conteudos["faixas"]:
-                        if faixas["duracao_seg"] != null:
+                        if faixas["duracao_seg"] != None:
                             duracao += faixas["duracao_seg"]
         return duracao
 
     def generos_de(self, conteudo_id: str):
         for conteudos in database["conteudos"]:
             if conteudos["id"] == conteudo_id:
-                return conteudos["generos"]
+                return ", ".join(conteudos["generos"])
+        return None
 
-    def plataformas_de(self, conteudo_id: str) -> list[str] | None: ...
-    def data_adicionado_de(self, conteudo_id: str) -> str | None: ...
-    def execucoes_de(self, conteudo_id: str) -> int | None: ...
+    def plataformas_de(self, conteudo_id: str):
+        for conteudos in database["conteudos"]:
+            if conteudos["id"] == conteudo_id:
+                return ", ".join(conteudos["plataformas"])
+        return None
+
+    def data_adicionado_de(self, conteudo_id: str):
+        partes = []
+        for conteudos in database["conteudos"]:
+            if conteudos["id"] == conteudo_id:
+                if "/" in conteudos["data_adicionado"]:
+                    partes = conteudos["data_adicionado"].split("/")
+                    return "-".join(reversed(partes))
+                else:
+                    return "".join(conteudos["data_adicionado"])
+
+    def execucoes_de(self, conteudo_id: str):
+        for conteudos in database["conteudos"]:
+            if conteudos["id"] == conteudo_id:
+                return None
+                
     def conteudos_do_genero(self, genero: str):
         musica_no_gen = []
         musicas = 0
         for conteudo in database["conteudos"]:
-            generos_conteudo = conteudo["genero"]
-            gen_normal = generos_conteudo.strip()
+            generos_conteudo = conteudo["generos"]
             if isinstance(generos_conteudo, str):
                 generos_conteudo = [generos_conteudo]
             if genero in generos_conteudo:
-                musica_no_gen.append(conteudo["titulo"] + " - " + conteudo["artista"] + " (" + ") (" + str(conteudo["id"]) + ")")
+                if conteudo["tipo"] == "album":
+                    tipo = "álbum"
+                else:
+                    tipo = "música"
+                musica_no_gen.append(conteudo["titulo"] + " - " + conteudo["artista"] + " (" + tipo + ") (" + str(conteudo["id"]) + ")")
                 musicas += 1
         if musicas == 0:
             print("Nenhum conteúdo nesse gênero.")
             return 1
-        print(f"{musicas} conteúdos em {genero}:")
+        print(f'{musicas} conteúdos em "{genero}":')
         for info in musica_no_gen:
             print(f"  - {info}")
 
     # --- fila de reprodução ---
-    def enfileirar(self, conteudo_id: str) -> bool: ...
+    def enfileirar(self, conteudo_id: str):
+        for conteudos in database["conteudos"]:
+            if conteudos["id"] == conteudo_id:
+                return True
+
+
     def proximo(self) -> str | None: ...
     def fila_atual(self) -> list[str]: ...

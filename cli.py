@@ -18,61 +18,81 @@ while(True):
 8. Tocar próximo da fila \n \
 9. Ver fila atual")
 
-    try: 
-        comando = int(input("> "))
-        if 0 > comando or comando > 10:
-            raise ValueError()
-        if comando == 0:
-            break
+#    try: 
+    fila = []
 
-        match comando: 
-            case 1:
-                catalogo.Catalogo.listar_usuarios("usuario")
+    comando = int(input("> "))
+    if 0 > comando or comando > 10:
+        raise ValueError()
+    if comando == 0:
+        break
 
-            case 2:
-                nome = input("Nome do usuário: ")
-                id = catalogo.Catalogo.buscar_usuario_por_nome("usuario", nome)
-                catalogo.Catalogo.playlist_de("usuario", id)
+    match comando: 
+        case 1:
+            catalogo.Catalogo.listar_usuarios("usuario")
 
-            case 3:
-                nome = input("Nome do usuário: ")
-                id = catalogo.Catalogo.buscar_usuario_por_nome("usuario", nome)
-                num = catalogo.Catalogo.numero_de_itens("usuario", id)
-                print(f"Playlist de {nome} tem {num} itens (posições 1 a {num}).")
-                posicao = int(input("Posição: "))
-                conteudo = catalogo.Catalogo.conteudo_na_posicao("usuario", id, posicao)
-                print(f"Posição {posicao} de {nome}: {conteudo}")
+        case 2:
+            nome = input("Nome do usuário: ")
+            id = catalogo.Catalogo.buscar_usuario_por_nome("usuario", nome)
+            catalogo.Catalogo.playlist_de("usuario", id)
 
-            case 4:
-                id1 = []
-                id2 = []
-                nomes = input("Nome dos usuários separados por vírgula (ex.: Nicholas, Uchoa): ")
-                if "," not in nomes:
-                    print("Informe pelo menos 2 usuários.")
-                dados = nomes.split(", ")
-                id1.append(catalogo.Catalogo.buscar_usuario_por_nome("usuario", dados[0]))
-                id2.append(catalogo.Catalogo.buscar_usuario_por_nome("usuario", dados[1]))
-                id1.extend(id2)
-                catalogo.Catalogo.intersecao_playlists("usuario", id1)
-            
-            case 5:
-                id = input("ID do conteúdo (ex.: t000000): ")
-                nome = catalogo.Catalogo.buscar_cont_por_id("conteudo", id)
-                print(nome)
-                rating = catalogo.Catalogo.rating_de("conteudo", id)
-                duracao = catalogo.Catalogo.duracao_total_de("conteudo", id)
-                print(f"  rating: {rating}")
-                duracao_min = int(int(duracao) / 60)
-                duracao_seg = int(duracao) % 60
-                print(f"  duração: {duracao_min}m{duracao_seg}s")
-                generos = catalogo.Catalogo.generos_de("conteudo", id)
-                print(f"  gêneros: {genero}")
+        case 3:
+            nome = input("Nome do usuário: ")
+            id = catalogo.Catalogo.buscar_usuario_por_nome("usuario", nome)
+            num = catalogo.Catalogo.numero_de_itens("usuario", id)
+            print(f"Playlist de {nome} tem {num} itens (posições 1 a {num}).")
+            posicao = int(input("Posição: "))
+            conteudo = catalogo.Catalogo.conteudo_na_posicao("usuario", id, posicao)
+            print(f"Posição {posicao} de {nome}: {conteudo}")
 
-            case 6:
-                generos = input("Gênero (ex.: Pop): ")
-                conteudos = catalogo.Catalogo.conteudos_do_genero("conteudo", generos)
+        case 4:
+            id1 = []
+            id2 = []
+            nomes = input("Nome dos usuários separados por vírgula (ex.: Nicholas, Uchoa): ")
+            if "," not in nomes:
+                print("Informe pelo menos 2 usuários.")
+            dados = nomes.split(", ")
+            id1.append(catalogo.Catalogo.buscar_usuario_por_nome("usuario", dados[0]))
+            id2.append(catalogo.Catalogo.buscar_usuario_por_nome("usuario", dados[1]))
+            id1.extend(id2)
+            catalogo.Catalogo.intersecao_playlists("usuario", id1)
         
-    except:
-        print(f" Opção inválida.")
+        case 5:
+            id = input("ID do conteúdo (ex.: t000000): ")
+            nome = catalogo.Catalogo.buscar_cont_por_id("conteudo", id)
+            print(nome)
+            rating = catalogo.Catalogo.rating_de("conteudo", id)
+            duracao = catalogo.Catalogo.duracao_total_de("conteudo", id)
+            print(f"  rating: {rating}")
+            duracao_min = int(int(duracao) / 60)
+            duracao_seg = int(duracao) % 60
+            print(f"  duração: {duracao_min}m{duracao_seg}s")
+            generos = catalogo.Catalogo.generos_de("conteudo", id)
+            print(f"  gêneros: {generos}")
+            plataformas = catalogo.Catalogo.plataformas_de("conteudo", id)
+            print(f"  plataformas: {plataformas}")
+            data = catalogo.Catalogo.data_adicionado_de("conteudo", id)
+            print(f"  adicionado: {data}")
+            execucoes = catalogo.Catalogo.duracao_total_de("conteudo", id)
+            if execucoes != None:
+                print(f"  execuções: {execucoes}")
+
+        case 6:
+            generos = input("Gênero (ex.: Pop): ")
+            conteudos = catalogo.Catalogo.conteudos_do_genero("conteudo", generos)
+        
+        case 7:
+            id = input("ID do conteúdo para enfileirar (ex.: t000000): ")
+            if catalogo.Catalogo.enfileirar("conteudo", id) == True:
+                fila.append(catalogo.Catalogo.buscar_cont_por_id("conteudo", id))
+                print("Enfileirado: ")
+                
+            else:
+                print(f'Conteúdo "{id} não existe - nada foi enfileirado.')
+
+
+        
+#    except:
+#        print(f" Opção inválida.")
 
 

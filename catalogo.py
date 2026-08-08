@@ -49,13 +49,13 @@ class Catalogo:
         for musica in playlist:
             musicas += 1
             for conteudos in database["conteudos"]:
-                if conteudos["id"] == i:
+                if conteudos["id"] == id:
                     if conteudos["tipo"] == "album":
                         tipo = "álbum"
                     else:
                         tipo = "música"
                     playlist_usuario.append(conteudos["titulo"] + " - " + conteudos["artista"] + " (" + tipo + ") ")
-        print(f"Playlist de {nome} ({num} itens):")
+        print(f"Playlist de {nome} ({musicas} itens):")
         for index, info in enumerate(playlist_usuario):
             print(f"{index + 1}. {info}")
 
@@ -196,5 +196,21 @@ class Catalogo:
                 return True
 
 
-    def proximo(self) -> str | None: ...
-    def fila_atual(self) -> list[str]: ...
+    def proximo(self, fila: list):
+        try:
+            print(f"Tocando: {fila[0]}")
+            fila.popleft()
+            if len(fila) == 1:
+                print(f"Resta {len(fila)} item na fila.")
+            else:
+                print(f"Restam {len(fila)} itens na fila.")
+        except:
+            print("Fila vazia.")
+
+    def fila_atual(self, fila: list):
+        if not fila:
+            print("Fila vazia.")
+        else:
+            print(f"Fila atual ({len(fila)} itens, próximo primeiro):")
+            for musicas, index in enumerate(fila):
+                print(f"   {index}. {musicas}")

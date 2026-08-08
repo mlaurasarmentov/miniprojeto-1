@@ -3,11 +3,17 @@
 Uso: python cli.py catalogo_final.json
 """
 import catalogo
+from collections import deque
 
 """ Início do menu (opções e validação) """
+
+fila = [] # para não reiniciar a fila toda vez!
+historico = deque(maxlen=10) # histórico
+
 while(True):
     print(f"\n Trilha Sonora \n \
 ————————————— \n \
+0. Sair \n \
 1. Listar todos os usuários \n \
 2. Ver playlist completa de um usuário \n \
 3. Conteúdo na posição N da playlist \n \
@@ -16,10 +22,10 @@ while(True):
 6. Conteúdos de um gênero \n \
 7. Enfileirar conteúdo na fila de reprodução \n \
 8. Tocar próximo da fila \n \
-9. Ver fila atual")
+9. Ver fila atual \n \
+10. Ver histórico")
 
 #    try: 
-    fila = []
 
     comando = int(input("> "))
     if 0 > comando or comando > 10:
@@ -30,11 +36,13 @@ while(True):
     match comando: 
         case 1:
             catalogo.Catalogo.listar_usuarios("usuario")
+            historico.append(1)
 
         case 2:
             nome = input("Nome do usuário: ")
             id = catalogo.Catalogo.buscar_usuario_por_nome("usuario", nome)
             catalogo.Catalogo.playlist_de("usuario", id)
+            historico.append(2)
 
         case 3:
             nome = input("Nome do usuário: ")
@@ -44,6 +52,7 @@ while(True):
             posicao = int(input("Posição: "))
             conteudo = catalogo.Catalogo.conteudo_na_posicao("usuario", id, posicao)
             print(f"Posição {posicao} de {nome}: {conteudo}")
+            historico.append(3)
 
         case 4:
             id1 = []
@@ -56,6 +65,7 @@ while(True):
             id2.append(catalogo.Catalogo.buscar_usuario_por_nome("usuario", dados[1]))
             id1.extend(id2)
             catalogo.Catalogo.intersecao_playlists("usuario", id1)
+            historico.append(4)
         
         case 5:
             id = input("ID do conteúdo (ex.: t000000): ")
@@ -76,22 +86,40 @@ while(True):
             execucoes = catalogo.Catalogo.duracao_total_de("conteudo", id)
             if execucoes != None:
                 print(f"  execuções: {execucoes}")
+            historico.append(5)
 
         case 6:
             generos = input("Gênero (ex.: Pop): ")
             conteudos = catalogo.Catalogo.conteudos_do_genero("conteudo", generos)
+            historico.append(6)
         
         case 7:
             id = input("ID do conteúdo para enfileirar (ex.: t000000): ")
             if catalogo.Catalogo.enfileirar("conteudo", id) == True:
                 fila.append(catalogo.Catalogo.buscar_cont_por_id("conteudo", id))
-                print("Enfileirado: ")
-                
+                if len(fila) == 1:
+                    print(f"Enfileirado: {"".join(fila)}(fila com {len(fila)} item).")
+                else:
+                    print(f"Enfileirado: {"".join(fila)}(fila com {len(fila)} itens).")
             else:
                 print(f'Conteúdo "{id} não existe - nada foi enfileirado.')
+            historico.append(7)
 
+        case 8:
+            catalogo.Catalogo.proximo("conteudo", fila)
+            historico.append(8)
+            
+        case 9:
+            catalogo.Catalogo.fila_atual("conteudo", fila)
+            historico.append(9)
 
-        
+        case 10: 
+            historico.append(10)
+            print("Histórico de comandos:")
+            for i in range(len(historico)):
+                print(f"  - {historico[i]}")
+            
+
 #    except:
 #        print(f" Opção inválida.")
 
